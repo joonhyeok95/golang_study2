@@ -1,18 +1,18 @@
 # Build stage
-FROM golang:alpine AS builder
+# FROM golang:alpine AS builder
 
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
+# ENV GO111MODULE=on \
+#     CGO_ENABLED=0 \
+#     GOOS=linux \
+#     GOARCH=amd64
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY go.mod go.sum main.go 
-COPY ./ ./
-RUN go mod download
-RUN go build -o main
-RUN find 
+# COPY go.mod go.sum main.go 
+# COPY ./ ./
+# RUN go mod download
+# RUN go build -o main
+# RUN find 
 
 #RUN cp /app/main .
 
@@ -20,7 +20,8 @@ RUN find
 FROM scratch
 
 WORKDIR /app
-
-COPY --from=builder /app/main .
+COPY main /app/main
+RUN chmod +x ./main
+# COPY --from=builder /app/main .
 
 ENTRYPOINT ["./main"]
