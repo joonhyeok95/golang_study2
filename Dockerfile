@@ -22,6 +22,7 @@ FROM scratch
 WORKDIR /app
 
 COPY main /app/main
+COPY *.env /app/
 # COPY --from=builder /app/main .
 
 ENTRYPOINT ["./main"]
