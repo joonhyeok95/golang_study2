@@ -20,8 +20,8 @@
 FROM scratch
 
 WORKDIR /app
+
 COPY main /app/main
-RUN chmod +x ./main
 # COPY --from=builder /app/main .
 
 ENTRYPOINT ["./main"]
