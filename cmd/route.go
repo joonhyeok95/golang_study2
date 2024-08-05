@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"go.elastic.co/apm/module/apmgorilla/v2"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +39,7 @@ func NewHttpHandler() http.Handler {
 	// API 호출 BATCH
 	mux.HandleFunc("/api/v1/batch", ApiGetUserAllHandler).Methods("GET")             // 사용자 전체 검색 API 를 호출하여 temp table 적재
 	mux.HandleFunc("/api/v1/batch/{id:[A-z0-9]+}", ApiGetUserHandler).Methods("GET") // 사용자 개별 검색 API 를 호출하여 temp table 적재
-
+	// Elastic APM 추가
+	mux.Use(apmgorilla.Middleware())
 	return mux
 }
