@@ -28,6 +28,9 @@ func NewHttpHandler() http.Handler {
 	mux := mux.NewRouter() // gorilla/mux
 	// CORS 추가
 	mux.Use(CORSHandler)
+	// Elastic APM 추가
+	apmgorilla.Instrument(mux)
+
 	mux.Use(jsonResponseMiddleware)
 	mux.NotFoundHandler = http.HandlerFunc(notFoundHandler)       // 404
 	mux.HandleFunc("/api/example", exampleHandler).Methods("GET") // 200
@@ -41,8 +44,6 @@ func NewHttpHandler() http.Handler {
 	// API 호출 BATCH
 	mux.HandleFunc("/api/v1/batch", ApiGetUserAllHandler).Methods("GET")             // 사용자 전체 검색 API 를 호출하여 temp table 적재
 	mux.HandleFunc("/api/v1/batch/{id:[A-z0-9]+}", ApiGetUserHandler).Methods("GET") // 사용자 개별 검색 API 를 호출하여 temp table 적재
-	// Elastic APM 추가
-	mux.Use(apmgorilla.Middleware())
 	return mux
 }
 
