@@ -26,6 +26,8 @@ func jsonResponseMiddleware(next http.Handler) http.Handler {
 // 라우터 등록
 func NewHttpHandler() http.Handler {
 	mux := mux.NewRouter() // gorilla/mux
+	// CORS 추가
+	mux.Use(CORSHandler)
 	mux.Use(jsonResponseMiddleware)
 	mux.NotFoundHandler = http.HandlerFunc(notFoundHandler)       // 404
 	mux.HandleFunc("/api/example", exampleHandler).Methods("GET") // 200
@@ -42,4 +44,22 @@ func NewHttpHandler() http.Handler {
 	// Elastic APM 추가
 	mux.Use(apmgorilla.Middleware())
 	return mux
+}
+
+// CORSHandler는 모든 요청에 대해 CORS 헤더를 설정하는 미들웨어입니다.
+func CORSHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// OPTIONS 요청에 대해 헤더만 설정하고 응답을 보냅니다.
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// 다음 핸들러로 요청을 전달합니다.
+		next.ServeHTTP(w, r)
+	})
 }
