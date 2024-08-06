@@ -28,8 +28,8 @@ func NewHttpHandler() http.Handler {
 	mux := mux.NewRouter() // gorilla/mux
 	// CORS 추가
 	mux.Use(CORSHandler)
-	// Elastic APM 추가
-	apmgorilla.Instrument(mux)
+	// Elastic APM 추가 ( gorilla mux 는 자동으로 트랜잭션을 추적하도록 도와줌)
+	mux.Use(apmgorilla.Middleware())
 
 	mux.Use(jsonResponseMiddleware)
 	mux.NotFoundHandler = http.HandlerFunc(notFoundHandler)       // 404
