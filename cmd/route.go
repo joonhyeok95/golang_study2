@@ -9,28 +9,16 @@ import (
 	"go.elastic.co/apm/module/apmgorilla/v2"
 )
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Main Page")
-}
-
-// default content-type setting
-func jsonResponseMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set Content-Type header to application/json for all responses
-		w.Header().Set("Content-Type", "application/json")
-		// Call the next handler in the chain
-		next.ServeHTTP(w, r)
-	})
-}
-
 // 라우터 등록
 func NewHttpHandler() http.Handler {
 	mux := mux.NewRouter() // gorilla/mux
-	// CORS 추가
-	mux.Use(CORSHandler)
 	// Elastic APM 추가 ( gorilla mux 는 자동으로 트랜잭션을 추적하도록 도와줌)
 	mux.Use(apmgorilla.Middleware())
-
+	// DB Context 미들웨어 추가
+	mux.Use(DBContextMiddleware)
+	// CORS 추가
+	mux.Use(CORSHandler)
+	// JSON 리턴
 	mux.Use(jsonResponseMiddleware)
 	mux.NotFoundHandler = http.HandlerFunc(notFoundHandler)       // 404
 	mux.HandleFunc("/api/example", exampleHandler).Methods("GET") // 200
@@ -47,6 +35,20 @@ func NewHttpHandler() http.Handler {
 	return mux
 }
 
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Main Page")
+}
+
+// default content-type setting
+func jsonResponseMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Set Content-Type header to application/json for all responses
+		w.Header().Set("Content-Type", "application/json")
+		// Call the next handler in the chain
+		next.ServeHTTP(w, r)
+	})
+}
+
 // CORSHandler는 모든 요청에 대해 CORS 헤더를 설정하는 미들웨어입니다.
 func CORSHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +63,15 @@ func CORSHandler(next http.Handler) http.Handler {
 		}
 
 		// 다음 핸들러로 요청을 전달합니다.
+		next.ServeHTTP(w, r)
+	})
+}
+
+// APM 미들웨어 함수
+func DBContextMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		DB = DB.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
 }
