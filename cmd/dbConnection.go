@@ -5,7 +5,8 @@ import (
 	"main/cmd/domain"
 	"os"
 
-	"gorm.io/driver/mysql"
+	apmmysql "go.elastic.co/apm/module/apmgormv2/v2/driver/mysql"
+	//"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -20,13 +21,13 @@ func InitDB() {
 
 	dsn := DBUSERNAME + ":" + DBPASSWORD + "@tcp(" + DBHOST + ":" + DBPORT + ")/" + DBNAME + "?charset=utf8mb4&parseTime=True&loc=Local"
 	//dsn := DBNAME + ":" + "Meta1915034@"@tcp(127.0.0.1:3306)/jh_golang?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(apmmysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Db 연결에 실패하였습니다.")
 	}
 	log.Printf("DB Connection Successed")
 	db.AutoMigrate(&domain.TMember{}, &domain.TMemberTemp{}) // 테이블 자동 생성
-	db.Debug()                                               // 수행로그 debug 상태
+	//db.Debug()                                               // 수행로그 debug 상태
 	DB = db
 }
 
