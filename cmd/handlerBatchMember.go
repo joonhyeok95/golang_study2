@@ -7,6 +7,7 @@ import (
 	"log"
 	"main/cmd/domain"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -30,8 +31,8 @@ func ApiGetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// API 호출
-	host := "http://localhost:3000/"
-	uri := "api/v1/users/" + id
+	host := os.Getenv("API_HOST")
+	uri := "/api/v1/users/" + id
 
 	responseData, err := http.Get(host + uri)
 	if err != nil {
@@ -77,8 +78,8 @@ func ApiGetUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func ApiGetUserAllHandler(w http.ResponseWriter, r *http.Request) {
 	// API 호출
-	host := "http://localhost:3000/"
-	uri := "api/v1/users"
+	host := os.Getenv("API_HOST")
+	uri := "/api/v1/users"
 
 	responseData, err := http.Get(host + uri)
 	if err != nil {
