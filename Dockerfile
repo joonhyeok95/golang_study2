@@ -24,6 +24,5 @@ WORKDIR /app
 COPY main /app/main
 COPY *.env /app/
 # COPY --from=builder /app/main .
-RUN chmod 644 /app/*.env
 
 ENTRYPOINT ["./main"]
