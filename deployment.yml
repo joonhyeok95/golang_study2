@@ -19,12 +19,30 @@ spec:
       containers:
       - env:
         - name: GO_ACTIVE_PROFILE
-          value: dev
+          value: {ENV}
         image: {IMAGE}
         imagePullPolicy: Always
+        startupProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 3000
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 3000
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
         name: go-app
         ports:
-        - containerPort: 8080
+        - containerPort: 3000
           name: http
           protocol: TCP
         resources: {}
@@ -44,7 +62,3 @@ spec:
       serviceAccount: default
       serviceAccountName: default
       terminationGracePeriodSeconds: 30
-  observedGeneration: 6
-  readyReplicas: 1
-  replicas: 1
-  updatedReplicas: 1
