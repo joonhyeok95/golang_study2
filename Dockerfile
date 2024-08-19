@@ -17,8 +17,7 @@
 #RUN cp /app/main .
 
 # Final stage
-FROM webdevops/toolbox
-#FROM scratch
+FROM scratch
 
 WORKDIR /app
 
